@@ -1,0 +1,6 @@
+/cache_directory
+/cmake-build-debug
+/manga-dl_tmp
+
+*.pdf
+*.log
