@@ -2,5 +2,8 @@
 /cmake-build-debug
 /manga-dl_tmp
 
+/src/python/build
+/.idea
+
 *.pdf
 *.log

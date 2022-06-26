@@ -87,7 +87,7 @@ inline void download_from_mangapark(const std::string &url, int idx = 0) {
 
   std::cout << "converting images to pdf" << std::endl;
   std::string cmd = "convert " + str + " manga-" + std::to_string(idx) + ".pdf";
-  std::cout << "convert " << "imgs" << " manga-" << idx << ".pdf";
+  std::cout << "convert " << "imgs" << " manga-" << idx << ".pdf" << std::endl;
   system(cmd.c_str());
   std::cout << "cleaning up" << std::endl;
   system("rm -r manga-dl_tmp");
