@@ -10,7 +10,7 @@ int main(int argc, char **argv) {
   for (int i = 1; i < argc; ++i) {
     std::string full_url = argv[i];
     if (full_url.find("mangapark") != std::string::npos) {
-      download_from_mangapark(full_url, i-1);
+      download_from_mangapark(full_url, i - 1);
     }
   }
   return 0;
