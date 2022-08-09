@@ -21,9 +21,6 @@ auto mdlx_download(const std::string &url, bool quiet = true) {
      << "\"";
 
   system(ss.str().c_str());
-//  auto file = read_file(filename);
-//  print(file);
-//  system(("rm " + filename).c_str());
   return filename;
 }
 

@@ -226,7 +226,7 @@ void follow_chain(std::deque<chain_t> chain,
     } else {
       switch (std::get<chain_type>(ct)) {
         case ct_PASS: break; // just skip, equivalent to passing the value along
-        case ct_FOR_EACH:break;
+        case ct_FOR_EACH:break; // this needs to be set up at some point
         case ct_ORDERED_FOR_EACH: {
           auto *tm = unmined::task_manager<4>::get_instance();
 
