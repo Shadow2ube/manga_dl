@@ -10,7 +10,8 @@
 namespace constants {
 
 const std::regex url_exp = std::regex(R"(https?://[^\s()<>]+(?:\([\w\d]+\)|(?:[^[:punct:]\s]|/)))");
-const std::regex domain_exp = std::regex(R"(https?://[^\s()<>/]+)");
+const std::regex domain_exp = std::regex(R"((?:https?://)([^\s()<>/]+))");
+
 const std::regex mangapark_chapter_exp = std::regex(R"(/comic.*/c[0-9]+-en)");
 const std::regex mangapark_image_exp = std::regex(
     R"(https://xfs-\d+\.mpcdn\.net/comic/\d+/[\d\w]+/[\d\w]+/[\d\w_]+\.jpeg\?acc=[\d\w_]+&(?:amp;exp=\d+|exp\d+))");

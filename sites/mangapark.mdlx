@@ -1,0 +1,34 @@
+CHAIN: \
+start :> \
+dl :> \
+get_chapters ==> \
+    modify :> \
+    dl :> \
+    get_img_elements ==> \
+        get_src :> \
+        check_img -> \
+     images -> \
+turn_vec -> out
+
+dl: download
+
+## Get argument 1, which is the url passed from the user
+start: pass @1
+
+## Find all matching regex
+get_chapters: find_all REGEX "/comic.*/c[0-9]+-en"
+
+## click all matching xpath
+modify: click XPATH "//button[contains(@class, 'btn-outline-info')]"
+
+## Get all images matching
+get_img_elements: find_all XPATH "//img"
+
+get_src: attribute "src"
+
+check_img: contains REGEX "https://xfs-\d+.mpcdn\.net/"
+
+images: vec
+
+turn_vec: merge ORDERED
+
