@@ -32,6 +32,8 @@ enum command_op {
   co_XPATH,
   co_ORDERED,
   co_INVALID,
+  co_BEFORE,
+  co_AFTER,
 };
 
 enum modifier {

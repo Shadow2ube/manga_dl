@@ -13,17 +13,23 @@
 using chain_t = std::variant<std::string, chain_type>;
 
 template<typename T>
-auto print(std::vector<T> p) {
+inline auto print(std::vector<T> p) {
+  std::stringstream ss;
   for (auto &i: p) {
-    std::cout << '"' << i << "\" ";
+    ss << '"' << i << "\" ";
   }
-  std::cout << std::endl;
+  ss << '\n';
+  printf("%s", ss.str().c_str());
+  std::cout.flush();
 }
 template<typename T>
-auto print(T in) {
-  std::cout << in << std::endl;
+inline auto print(T in) {
+  std::stringstream ss;
+  ss << in;
+  printf("%s\n", ss.str().c_str());
+  std::cout.flush();
 }
-auto print(std::vector<chain_t> chain) {
+inline auto print(std::vector<chain_t> chain) {
   for (auto &i: chain) {
     if (std::holds_alternative<chain_type>(i)) {
       switch (std::get<chain_type>(i)) {
@@ -43,6 +49,12 @@ auto print(std::vector<chain_t> chain) {
   std::cout << std::endl;
 }
 
-
+template<typename T>
+inline auto printe(T in) {
+  std::stringstream ss;
+  ss << in;
+  fprintf(stderr, "*** %s ***\n", ss.str().c_str());
+  std::cout.flush();
+}
 
 #endif //MANGA_DL_SRC_PRINTERS_H_

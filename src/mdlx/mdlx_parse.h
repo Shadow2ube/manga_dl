@@ -44,6 +44,8 @@ auto str_to_command_op(const std::string &in) {
   if (in == "REGEX") return co_REGEX;
   if (in == "XPATH") return co_XPATH;
   if (in == "ORDERED") return co_ORDERED;
+  if (in == "BEFORE") return co_BEFORE;
+  if (in == "AFTER") return co_AFTER;
   return co_INVALID;
 }
 auto str_to_modifier(const std::string &in) {
@@ -127,7 +129,9 @@ auto run_task(const std::string &name,
               const std::string &thru,
               const arguments &args) -> std::variant<std::string, std::vector<std::string>> {
   switch (std::get<command>(args[0])) {
-    case c_PASS: return std::get<std::string>(args[1]);
+    case c_PASS: {
+      return std::get<std::string>(args[1]);
+    }
     case c_DOWNLOAD: return mdlx_download(thru);
     case c_FIND_ALL: {
       if (std::get<command_op>(args[1]) == command_op::co_REGEX)
@@ -135,20 +139,27 @@ auto run_task(const std::string &name,
       else if (std::get<command_op>(args[1]) == command_op::co_XPATH)
         return mdlx_find_all_xp(thru, std::get<std::string>(args[2]));
     }
-    case c_CLICK:break;
-    case c_VEC:print("VEC");
+    case c_CLICK:
+      // Do things with webdriver
+      if (std::get<command_op>(args[1]) == command_op::co_REGEX)
+        return mdlx_click_reg(thru, std::get<std::string>(args[2]));
+      else if (std::get<command_op>(args[1]) == command_op::co_XPATH)
+        return mdlx_click_xp(thru, std::get<std::string>(args[2]));
+      break;
+    case c_VEC: print("VEC");
 //      return "";
       break;
-    case c_MERGE:print("MERGE");
+    case c_MERGE:
+      if (std::get<command_op>(args[1]) == co_BEFORE)
+        return std::get<std::string>(args[2]) + thru;
+      else return thru + std::get<std::string>(args[2]);
+    case c_ATTRIBUTE: print("ATTRIBUTE");
 //      return "";
       break;
-    case c_ATTRIBUTE:print("ATTRIBUTE");
+    case c_CONTAINS: print("CONTAINS");
 //      return "";
       break;
-    case c_CONTAINS:print("CONTAINS");
-//      return "";
-      break;
-    case c_INVALID:print("INVALID");
+    case c_INVALID: print("INVALID");
 //      return "";
       break;
   }
@@ -168,18 +179,13 @@ void follow_chain_recurse(std::deque<chain_t> chain,
       std::string name = std::get<std::string>(ct);
       auto args = tasks[name];
       current = run_task(name, std::get<std::string>(current), args);
-      if (std::holds_alternative<std::vector<std::string>>(current)) {
-        if (std::get<std::vector<std::string>>(current).empty()) exit(69);
-      } else {
-        if (std::get<std::string>(current).empty()) exit(69);
-      }
 
     } else {
       switch (std::get<chain_type>(ct)) {
-        case ct_PASS: break; // just skip, equivalent to passing the value along
+        case ct_PASS:break; // just skip, equivalent to passing the value along
         case ct_FOR_EACH:break;
         case ct_ORDERED_FOR_EACH: {
-          auto *tm = unmined::task_manager<4>::get_instance();
+          auto *tm = unmined::task_manager<constants::task_manager_workers>::get_instance();
 
           auto list = std::get<std::vector<std::string>>(current);
           for (int i = 0; i < list.size(); ++i) {
@@ -228,15 +234,14 @@ void follow_chain(std::deque<chain_t> chain,
         case ct_PASS: break; // just skip, equivalent to passing the value along
         case ct_FOR_EACH:break; // this needs to be set up at some point
         case ct_ORDERED_FOR_EACH: {
-          auto *tm = unmined::task_manager<4>::get_instance();
+          auto *tm = unmined::task_manager<constants::task_manager_workers>::get_instance();
 
           auto list = std::get<std::vector<std::string>>(current);
-          print(list.size());
-          print(list);
           for (int i = 0; i < list.size(); ++i) {
             tm->add({"tmp-0-" + std::to_string(i),
                      [chain, tasks, list, i]() -> int {
                        follow_chain_recurse(chain, tasks, list[i]);
+
                        return 0;
                      }});
           }
@@ -262,7 +267,7 @@ auto parse_mdlx(const std::string &uri, const std::string &arg1) -> void {
 
   while (in.good()) {
     std::getline(in, line);
-    if (line.empty() || line.starts_with("##")) continue;
+    if (line.starts_with("##") || line.empty()) continue;
     if (line.starts_with("CHAIN:")) {
       chain = parse_chain(line.substr(6, line.size() - 1), in);
     } else {

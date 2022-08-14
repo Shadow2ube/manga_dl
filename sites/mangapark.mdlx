@@ -2,8 +2,8 @@ CHAIN: \
 start :> \
 dl :> \
 get_chapters ==> \
+    make_url :> \
     modify :> \
-    dl :> \
     get_img_elements ==> \
         get_src :> \
         check_img -> \
@@ -18,11 +18,13 @@ start: pass @1
 ## Find all matching regex
 get_chapters: find_all REGEX "/comic.*/c[0-9]+-en"
 
+make_url: merge BEFORE "https://mangapark.net"
+
 ## click all matching xpath
 modify: click XPATH "//button[contains(@class, 'btn-outline-info')]"
 
 ## Get all images matching
-get_img_elements: find_all XPATH "//img"
+get_img_elements: find_all REGEX "//img"
 
 get_src: attribute "src"
 
